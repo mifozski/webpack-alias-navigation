@@ -1,6 +1,6 @@
-# webpack-alias-navigation README
+# webpack-alias-navigation
 
-This is the README for your extension "webpack-alias-navigation". After writing up a brief description, we recommend including the following sections.
+This extension reads wepback config file and uses its resolver modules for 'Go To Definition' command.
 
 ## Features
 

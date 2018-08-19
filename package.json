@@ -2,8 +2,12 @@
 	"name": "webpack-alias-navigation",
 	"displayName": "webpack-alias-navigation",
 	"description": "Reads aliases from webpack config file and use them to navigate import paths",
+	"repository": {
+		"type" : "git",
+		"url" : "git@github.com:mifozski/webpack-alias-navigation.git"
+	},
 	"version": "0.0.1",
-	"publisher": "mifoz",
+	"publisher": "mifozski",
 	"engines": {
 		"vscode": "^1.26.0"
 	},
@@ -11,7 +15,7 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onLanguage:plaintext"
+		"onLanguage:javascript"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
@@ -35,7 +39,13 @@
 					],
 					"default": "off",
 					"description": "Traces the communication between VS Code and the language server."
-				}
+                },
+                "webpackAliasNavigation.webpackConfigFile": {
+                    "scope": "resource",
+                    "type": "string",
+                    "default": "webpack.config.js",
+                    "description": "Webpack config file (.js) path"
+                }
 			}
 		}
 	},

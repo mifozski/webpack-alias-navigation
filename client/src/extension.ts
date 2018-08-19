@@ -5,7 +5,8 @@
 'use strict';
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
+import { WebpackDefinitionProvider } from './WebpackDefinitionProvider';
 
 import {
 	LanguageClient,
@@ -16,7 +17,33 @@ import {
 
 let client: LanguageClient;
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
+
+	let workspaceRoot = path.resolve(vscode.workspace.rootPath, 'boron');
+	if (!workspaceRoot) {
+		return;
+	}
+	const pattern = path.join(workspaceRoot, 'webpack.config.js');
+
+	const webpackConfig = require(pattern);
+
+	let modules: Array<string> = webpackConfig.resolve.modules;
+	let pwd = path.resolve('.');
+	const resolvedModules = modules.map(modulePath  => {
+		const diff = path.relative(pwd, modulePath);
+		return path.join(workspaceRoot, diff);
+	});
+
+
+	let fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+	fileWatcher.onDidChange(onWebpackConfigChanged);
+
+	// let fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+
+	let provider = new WebpackDefinitionProvider();
+	provider.setModules(resolvedModules);
+	vscode.languages.registerDefinitionProvider({ language: 'javascript', scheme: 'file' }, provider);
+
 	// The server is implemented in node
 	let serverModule = context.asAbsolutePath(
 		path.join('server', 'out', 'server.js')
@@ -42,7 +69,7 @@ export function activate(context: ExtensionContext) {
 		documentSelector: [{ scheme: 'file', language: 'plaintext' }],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
-			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+			fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
 		}
 	};
 
@@ -56,6 +83,10 @@ export function activate(context: ExtensionContext) {
 
 	// Start the client. This will also launch the server
 	client.start();
+}
+
+export function onWebpackConfigChanged() {
+
 }
 
 export function deactivate(): Thenable<void> {

@@ -15,7 +15,7 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionItemKind,
-	TextDocumentPositionParams
+	TextDocumentPositionParams,
 } from 'vscode-languageserver';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -48,12 +48,20 @@ connection.onInitialize((params: InitializeParams) => {
 		capabilities: {
 			textDocumentSync: documents.syncKind,
 			// Tell the client that the server supports code completion
+			definitionProvider: true,
 			completionProvider: {
 				resolveProvider: true
 			}
 		}
 	};
 });
+
+// connection.onDefinition((textDocumentIdentifier: TextDocumentIdentifier): Definition => {
+//     return Location.create(textDocumentIdentifier.uri, {
+//         start: { line: 2, character: 5 },
+//         end: { line: 2, character: 6 }
+//     });
+// });
 
 connection.onInitialized(() => {
 	if (hasConfigurationCapability) {
